@@ -4,7 +4,7 @@ from time import sleep
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-class Car(object):
+class CarMotor(object):
     in1 = 23
     in2 = 24
     in3 = 17
@@ -71,7 +71,7 @@ class Car(object):
 if __name == '__main__':
 
     try:
-        car = Car()
+        motor = CarMotor()
         print("\n")
         print("The default speed & direction of motor is LOW & Forward.....")
         print("r-run s-stop f-forward b-backward l-low m-medium h-high e-exit")
@@ -83,27 +83,27 @@ if __name == '__main__':
             
             if x=='f':
                 print("forward")
-                car.forward(26)
+                motor.forward(26)
                 x='z'
         
             elif x=='s':
                 print("stop")
-                car.stop()
+                motor.stop()
                 x='z'
         
             elif x=='b':
                 print("backward")
-                car.backward(26)
+                motor.backward(26)
                 x='z'
         
             elif x=='l':
                 print("left")
-                car.left(26)
+                motor.left(26)
                 x='z'
         
             elif x=='r':
                 print("right")
-                car.right(26)
+                motor.right(26)
                 x='z'
         
             elif x=='e':
