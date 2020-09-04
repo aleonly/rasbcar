@@ -42,6 +42,14 @@ class CarUltrasonic(object):
     
         return distance
 
+    def moving_distance(self):
+        dist_current = self.distance()
+        if dist_current == 0:
+            return self.dist_mov_ave
+        else:
+            self.dist_mov_ave = 0.8*dist_current + 0.2*self.dist_mov_ave
+            return self.dist_mov_ave
+
 if __name__ == '__main__':
     try:
         car = CarUltrasonic()
