@@ -26,9 +26,9 @@ class CarMotor2(object):
         GPIO.output(self.in3, GPIO.LOW)
         GPIO.output(self.in4, GPIO.LOW)
 
-        self.pa = GPIO.PWM(self.ena, 1000)
+        self.pa = GPIO.PWM(self.ena, 500)
         self.pa.start(40)
-        self.pb = GPIO.PWM(self.enb, 1000)
+        self.pb = GPIO.PWM(self.enb, 500)
         self.pb.start(40)
 
     def forward(self):
