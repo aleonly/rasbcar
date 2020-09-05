@@ -1,21 +1,21 @@
 import RPi.GPIO as GPIO
 import time
 
-from motor import CarMotor
-from ultrasound import CarUltrasonic
+from motor2 import CarMotor2
+from ultrasonic import CarUltrasonic
 from infrared import CarInfrared
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-class Car(CarMotor,CarUltrasonic, CarInfrared):
+class Car(CarMotor2,CarUltrasonic, CarInfrared):
     def __init__(self):
-        CarMotor.__init__(self)
+        CarMotor2.__init__(self)
         CarUltrasonic.__init__(self)
         CarInfrared.__init__(self)
     
     def all_stop(self):
-        CarMotor.stop(self)
+        CarMotor2.stop(self)
         GPIO.cleanup()
 
 
@@ -34,22 +34,22 @@ if __name__ == '__main__':
                 start_time = None
                 if left_measure == 0 and right_measure == 1:
                     print("Going right")
-                    car.right(50)
+                    car.right()
                 elif left_measure == 1 and right_measure == 0:
                     print("Going left")
-                    car.left(50)
+                    car.left()
                 elif left_measure == 0 and right_measure == 0:
                     print("Going back")
-                    car.back(50)
+                    car.backward()
                 else:
                     if dist_mov_ave < 20:
-                        car.left(50)
+                        car.left()
                         print("Going left")
                         start_time = time.time()
                     elif dist_mov_ave < 100:
-                        car.forward(dist_mov_ave/2 + 40)
+                        car.forward()
                     else:
-                        car.forward(50)
+                        car.forward()
             else:
                 pass
 

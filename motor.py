@@ -5,26 +5,27 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
 class CarMotor(object):
-    in1 = 23
-    in2 = 24
-    in3 = 17
-    in4 = 27
+    def __init__(self):
+        in1 = 23
+        in2 = 24
+        in3 = 17
+        in4 = 27
 
-    GPIO.setup(in1,GPIO.OUT)
-    GPIO.setup(in2,GPIO.OUT)
-    GPIO.setup(in3,GPIO.OUT)
-    GPIO.setup(in4,GPIO.OUT)
+        GPIO.setup(in1, GPIO.OUT)
+        GPIO.setup(in2, GPIO.OUT)
+        GPIO.setup(in3, GPIO.OUT)
+        GPIO.setup(in4, GPIO.OUT)
 
-    # PWM initialization
-    self.motor11 = GPIO.PWM(in1,500)
-    self.motor12 = GPIO.PWM(in2,500)
-    self.motor21 = GPIO.PWM(in3,500)
-    self.motor22 = GPIO.PWM(in4,500)
+        # PWM initialization
+        self.motor11 = GPIO.PWM(in1, 500)
+        self.motor12 = GPIO.PWM(in2, 500)
+        self.motor21 = GPIO.PWM(in3, 500)
+        self.motor22 = GPIO.PWM(in4, 500)
 
-    self.motor11.start(0)
-    self.motor12.start(0)
-    self.motor21.start(0)
-    self.motor22.start(0)
+        self.motor11.start(0)
+        self.motor12.start(0)
+        self.motor21.start(0)
+        self.motor22.start(0)
 
     def forward(self, speed):
         self.motor11.ChangeDutyCycle(speed)
@@ -68,48 +69,44 @@ class CarMotor(object):
         self.motor21.stop()
         self.motor22.stop()
 
-if __name == '__main__':
-
-    try:
-        motor = CarMotor()
-        print("\n")
-        print("The default speed & direction of motor is LOW & Forward.....")
-        print("r-run s-stop f-forward b-backward l-low m-medium h-high e-exit")
-        print("\n")    
-
-        while(1):
-        
-            x=raw_input()
-            
-            if x=='f':
-                print("forward")
-                motor.forward(26)
-                x='z'
-        
-            elif x=='s':
-                print("stop")
-                motor.stop()
-                x='z'
-        
-            elif x=='b':
-                print("backward")
-                motor.backward(26)
-                x='z'
-        
-            elif x=='l':
-                print("left")
-                motor.left(26)
-                x='z'
-        
-            elif x=='r':
-                print("right")
-                motor.right(26)
-                x='z'
-        
-            elif x=='e':
-                GPIO.cleanup()
-                break
-            
-            else:
-                print("<<<  wrong data  >>>")
-                print("please enter the defined data to continue.....")
+if __name__ == '__main__':
+    motor = CarMotor()
+    print("\n")
+    print("The default speed & direction of motor is LOW & Forward.....")
+    print("r-run s-stop f-forward b-backward l-low m-medium h-high e-exit")
+    print("\n")    
+ 
+    while(1):
+        x=input()
+        if x=='f':
+            print("forward")
+            motor.forward(90)
+            x='z'
+ 
+        elif x=='s':
+            print("stop")
+            motor.stop()
+            x='z'
+ 
+        elif x=='b':
+            print("backward")
+            motor.backward(90)
+            x='z'
+ 
+        elif x=='l':
+            print("left")
+            motor.left(90)
+            x='z'
+ 
+        elif x=='r':
+            print("right")
+            motor.right(90)
+            x='z'
+ 
+        elif x=='e':
+            GPIO.cleanup()
+            break
+ 
+        else:
+            print("<<<  wrong data  >>>")
+            print("please enter the defined data to continue.....")
