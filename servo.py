@@ -17,24 +17,27 @@ class CarServo(object):
 if __name__ == "__main__":
     servo = CarServo()
     info = "please input the degree(0<=a<=180)\nor press q to quit\n"
-    r = input(info)
 
     try:
-        while not r == "q":
-            if r.isdigit():
-                r = int(r)
+        while True:
+            r = input(info)
+
+            if not r == "q":
+                if r.isdigit():
+                    r = int(r)
+                else:
+                    print("please input a number(0<=num<=180)")
+                    continue
+
+                if r < 0 or r > 180:
+                    print("a must be [0,180]")
+                    continue
+
+                servo.cycle(r)
+                time.sleep(0.02)
             else:
-                print("please input a number(0<=num<=180)")
-                continue
+                break
 
-            if r < 0 or r > 180:
-                print("a must be [0,180]")
-                continue
-
-            servo.cycle(r)
-            time.sleep(0.02)
-
-            r=str(input(info))
     except KeyboardInterrupt:
         pass
 
