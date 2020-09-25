@@ -4,42 +4,39 @@ import time
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-class CarServo(object):
-    def __init__(self):
-        self.pin = 16
-        GPIO.setup(self.pin, GPIO.OUT, initial=GPIO.LOW)
-        self.p=GPIO.PWM(self.pin, 50)
-        self.p.start(0)
+class Servo(object):
+    def __init__(self, channel):
+        self.channel = channel
+        GPIO.setup(self.channel, GPIO.OUT, initial=GPIO.LOW)
+        self.pwm=GPIO.PWM(self.channel, 50)
+        self.pwm.start(0)
 
-    def cycle(self, r):
-        self.p.ChangeDutyCycle(2+r/18)
+    def duty_cycle(self, angle):
+        self.pwm.ChangeDutyCycle(2+angle/18)
 
 if __name__ == "__main__":
-    servo = CarServo()
-    info = "please input the degree(0<=a<=180)\nor press q to quit\n"
+    servo = Servo(26)
 
     try:
         while True:
-            r = input(info)
+            angle = input("Please enter a integer [0,180]:")
 
-            if not r == "q":
-                if r.isdigit():
-                    r = int(r)
-                else:
-                    print("please input a number(0<=num<=180)")
-                    continue
-
-                if r < 0 or r > 180:
-                    print("a must be [0,180]")
-                    continue
-
-                servo.cycle(r)
-                time.sleep(0.02)
-            else:
+            if angle == "q":
                 break
+            
+            if not angle.isdigit():
+                print("angle must be integer")
+                continue
+
+            if int(angle) < 0 or int(angle) > 180:
+                print("angle must be [0,180]")
+                continue
+
+            servo.duty_cycle(angle)
+            time.sleep(0.02)
 
     except KeyboardInterrupt:
         pass
 
-    servo.p.stop()
+    servo.pwm.stop()
     GPIO.cleanup()
