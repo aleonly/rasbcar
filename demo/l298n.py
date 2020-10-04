@@ -3,19 +3,16 @@ from time import sleep
 
 in1 = 23
 in2 = 24
-en = 25
-#in1 = 17
-#in2 = 27
-#en = 22
+ena = 25
 temp1=1
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(in1,GPIO.OUT)
 GPIO.setup(in2,GPIO.OUT)
-GPIO.setup(en,GPIO.OUT)
+GPIO.setup(ena,GPIO.OUT)
 GPIO.output(in1,GPIO.LOW)
 GPIO.output(in2,GPIO.LOW)
-p=GPIO.PWM(en,1000)
+p=GPIO.PWM(ena,1000)
 p.start(25)
 print("\n")
 print("The default speed & direction of motor is LOW & Forward.....")
@@ -38,7 +35,6 @@ while(1):
          GPIO.output(in2,GPIO.HIGH)
          print("backward")
          x='z'
-
 
     elif x=='s':
         print("stop")
