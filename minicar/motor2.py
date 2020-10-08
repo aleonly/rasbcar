@@ -1,5 +1,7 @@
+from __future__ import division
 import RPi.GPIO as GPIO          
 from time import sleep
+import sys,tty,termios
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -26,46 +28,54 @@ class CarMotor2(object):
         GPIO.output(self.in3, GPIO.LOW)
         GPIO.output(self.in4, GPIO.LOW)
 
-        self.pa = GPIO.PWM(self.ena, 500)
+        self.pa = GPIO.PWM(self.ena, 1000)
         self.pa.start(40)
-        self.pb = GPIO.PWM(self.enb, 500)
+        self.pb = GPIO.PWM(self.enb, 1000)
         self.pb.start(40)
 
-    def forward(self):
+    def forward(self, speed=40):
+        self.pa.ChangeDutyCycle(speed)
+        self.pb.ChangeDutyCycle(speed)
         GPIO.output(self.in1,GPIO.HIGH)
         GPIO.output(self.in2,GPIO.LOW)
         GPIO.output(self.in3,GPIO.HIGH)
         GPIO.output(self.in4,GPIO.LOW)
 
-    def backward(self):
+    def backward(self, speed=40):
+        self.pa.ChangeDutyCycle(speed)
+        self.pb.ChangeDutyCycle(speed)
         GPIO.output(self.in1,GPIO.LOW)
         GPIO.output(self.in2,GPIO.HIGH)
         GPIO.output(self.in3,GPIO.LOW)
         GPIO.output(self.in4,GPIO.HIGH)
 
-    def left(self):
+    def left(self, speed=40):
+        self.pa.ChangeDutyCycle(speed)
         GPIO.output(self.in1,GPIO.HIGH)
         GPIO.output(self.in2,GPIO.LOW)
         GPIO.output(self.in3,GPIO.LOW)
         GPIO.output(self.in4,GPIO.HIGH)
 
-    def right(self):
+    def right(self, speed=40):
+        self.pb.ChangeDutyCycle(speed)
         GPIO.output(self.in1,GPIO.LOW)
         GPIO.output(self.in2,GPIO.HIGH)
         GPIO.output(self.in3,GPIO.HIGH)
         GPIO.output(self.in4,GPIO.LOW)
 
-    #def forward_turn(self, speed_left, speed_right):
-    #    self.motor11.ChangeDutyCycle(speed_left)
-    #    self.motor12.ChangeDutyCycle(0)
-    #    self.motor21.ChangeDutyCycle(speed_right)
-    #    self.motor22.ChangeDutyCycle(0)
+    def forward_turn(self, speed_left, speed_right):
+        self.pa.ChangeDutyCycle(speed_left)
+        self.pb.ChangeDutyCycle(speed_right)
+        GPIO.output(self.in1,GPIO.LOW)
+        GPIO.output(self.in2,GPIO.HIGH)
+        GPIO.output(self.in3,GPIO.LOW)
+        GPIO.output(self.in4,GPIO.HIGH)
 
-    #def brake(self):
-    #    self.motor11.ChangeDutyCycle(0)
-    #    self.motor12.ChangeDutyCycle(0)
-    #    self.motor21.ChangeDutyCycle(0)
-    #    self.motor22.ChangeDutyCycle(0)
+    def brake(self):
+        GPIO.output(self.in1,GPIO.LOW)
+        GPIO.output(self.in2,GPIO.LOW)
+        GPIO.output(self.in3,GPIO.LOW)
+        GPIO.output(self.in4,GPIO.LOW)
 
     def stop(self):
         GPIO.output(self.in1,GPIO.LOW)
@@ -73,63 +83,59 @@ class CarMotor2(object):
         GPIO.output(self.in3,GPIO.LOW)
         GPIO.output(self.in4,GPIO.LOW)
 
-if __name__ == '__main__':
+    def speed(self, cycle):
+        ena.ChangeDutyCycle(cycle)
+        enb.ChangeDutyCycle(cycle)
+
+class _Getch:
+    def __call__(self, n):
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(n)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+if __name__ == "__main__":
     motor = CarMotor2()
+    inkey = _Getch()
     print("\n")
     print("The default speed & direction of motor is LOW & Forward.....")
     print("s-stop f-forward b-backward left-left r-right l-low m-medium h-high e-exit")
-    print("\n")    
+    print("\n")
 
-    while(1):
-        x = input()
-        
-        if x=='f':
-            print("forward")
-            motor.forward()
-            x='z'
-    
-        elif x=='s':
-            print("stop")
-            motor.stop()
-            x='z'
-    
-        elif x=='b':
-            print("backward")
-            motor.backward()
-            x='z'
+    print("enter q for quit")
+    try:
+        while True:
+            k = inkey(1)
+            if k == 'w':
+                print("forward")
+                motor.forward()
 
-        elif x=='left':
-            print("left")
-            motor.left()
-            x='z'
+            elif k == 'x':
+                print("backward")
+                motor.backward()
 
-        elif x=='r':
-            print("right")
-            motor.right()
-            x='z'
-    
-        elif x=='l':
-            print("low")
-            motor.pa.ChangeDutyCycle(30)
-            motor.pb.ChangeDutyCycle(30)
-            x='z'
-    
-        elif x=='m':
-            print("medium")
-            motor.pa.ChangeDutyCycle(50)
-            motor.pb.ChangeDutyCycle(50)
-            x='z'
-    
-        elif x=='h':
-            print("high")
-            motor.pa.ChangeDutyCycle(75)
-            motor.pb.ChangeDutyCycle(75)
-            x='z'
-        
-        elif x=='e':
-            GPIO.cleanup()
-            break
-        
-        else:
-            print("<<<  wrong data  >>>")
-            print("please enter the defined data to continue.....")
+            elif k == 'a':
+                print("left")
+                motor.left(70)
+
+            elif k == 'd':
+                print("right")
+                motor.right(70)
+
+            elif k == 's':
+                print("stop")
+                motor.stop()
+
+            elif k == 'q':
+                GPIO.cleanup()
+                break
+            else:
+                print("<<<  wrong data  >>>")
+                print("please enter the defined data to continue.....")
+
+    except KeyboardInterrupt:
+        pass

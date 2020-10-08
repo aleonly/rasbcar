@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+import sys,tty,termios
 
 from motor2 import CarMotor2
 from ultrasonic import CarUltrasonic
@@ -20,93 +21,59 @@ class Car(CarMotor2,CarUltrasonic, CarInfrared, CarServo):
         CarMotor2.stop(self)
         GPIO.cleanup()
 
+class _Getch:
+    def __call__(self, n):
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(n)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
 
 if __name__ == '__main__':
     try:
         car = Car() 
-        #start_time = None
+        ultrasonic_pan = 90
+        car.set_angle(6, ultrasonic_pan)
 
-        #while True:
-        #    dist_mov_ave = car.moving_distance()
-        #    print('Distance', dist_mov_ave)
-
-        #    [left_measure, right_measure] = car.infrared()
-
-        #    if (start_time is None) or (time.time() - start_time >  0.5):
-        #        start_time = None
-        #        if left_measure == 0 and right_measure == 1:
-        #            print("Going right")
-        #            car.right()
-        #        elif left_measure == 1 and right_measure == 0:
-        #            print("Going left")
-        #            car.left()
-        #        elif left_measure == 0 and right_measure == 0:
-        #            print("Going back")
-        #            car.backward()
-        #        else:
-        #            if dist_mov_ave < 20:
-        #                car.left()
-        #                print("Going left")
-        #                start_time = time.time()
-        #            elif dist_mov_ave < 100:
-        #                car.forward()
-        #            else:
-        #                car.forward()
-        #    else:
-        #        pass
         while(1):
             distance = car.distance()
-            #print(distance)
             [left_measure, right_measure] = car.infrared()
 
-            #if distance < 30:
-            #    car.pa.ChangeDutyCycle(0)
-            #    car.pb.ChangeDutyCycle(0)
-            #    car.cycle(0)
-            #    time.sleep(2)
-            #    right_distance = car.distance()
-            #    car.cycle(180)
-            #    time.sleep(2)
-            #    left_distance = car.distance()
-            #    car.cycle(90)
-            #    time.sleep(2)
-            #    
-            #    if right_distance < left_distance:
-            #        print(right_distance)
-            #        car.pa.ChangeDutyCycle(40)
-            #        car.pb.ChangeDutyCycle(40)
-            #        car.right()
-            #        time.sleep(2)
-            #    else:
-            #        car.pa.ChangeDutyCycle(40)
-            #        car.pb.ChangeDutyCycle(40)
-            #        car.left()
-            #        time.sleep(2)
+            car.pa.ChangeDutyCycle(40)
+            car.pb.ChangeDutyCycle(40)
 
-            #else:
-            #    car.pa.ChangeDutyCycle(40)
-            #    car.pb.ChangeDutyCycle(40)
-            #    if left_measure == 0 and right_measure == 1:
-            #        print("Going right")
-            #        car.right()
-            #    elif left_measure == 1 and right_measure == 0:
-            #        print("Going left")
-            #        car.left()
-            #    else:
-            #        car.forward()
-
-      
-            car.pa.ChangeDutyCycle(30)
-            car.pb.ChangeDutyCycle(30)
-            if left_measure == 0 and right_measure == 1:
-                print("Going right")
-                car.right()
-            elif left_measure == 1 and right_measure == 0:
-                print("Going left")
-                car.left()
+            if distance > 30:
+                if left_measure == 0 and right_measure == 1:
+                    print("Going right")
+                    car.right(70)
+                elif left_measure == 1 and right_measure == 0:
+                    print("Going left")
+                    car.left(70)
+                else:
+                    car.forward()
             else:
-                car.forward()
+                car.stop()
+                car.set_angle(6, 0)
+                right_distance = car.distance()
+                time.sleep(1)
+                car.set_angle(6, 180)
+                left_distance = car.distance()
+                time.sleep(1)
+                car.set_angle(6, 90)
+
+                if right_distance < left_distance:
+                    print("Fence, going right")
+                    car.right(70)
+                    time.sleep(1)
+                else:
+                    print("Fence, going left")
+                    car.left(70)
+                    time.sleep(1)
 
     except KeyboardInterrupt:
         print("Measurement stopped by User")
+        car.set_angle(6, ultrasonic_pan)
         car.all_stop()
