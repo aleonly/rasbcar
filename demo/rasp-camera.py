@@ -7,6 +7,9 @@ while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
 
+    # Flip camera vertically
+    frame = cv2.flip(frame, -1)
+
     # Our operations on the frame come here
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
