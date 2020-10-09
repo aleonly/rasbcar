@@ -38,7 +38,7 @@ while True:
     # grab the next frame from the video stream, Invert 180o, resize the
     # frame, and convert it to the HSV color space
     frame = vs.read()
-    frame = imutils.resize(frame, width=500)
+    frame = imutils.resize(frame, width=600)
     frame = imutils.rotate(frame, angle=180)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     

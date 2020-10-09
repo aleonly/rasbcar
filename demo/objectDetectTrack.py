@@ -37,28 +37,28 @@ def positionServo(channel, angle):
 def mapServoPosition(x, y):
     global panAngle
     global tiltAngle
-    if (x < 220):
+    if (x < 270):
         panAngle += 5
         print(panAngle)
         if panAngle > 160:
             panAngle = 160
         positionServo(panServo, panAngle)
  
-    if (x > 280):
+    if (x > 310):
         panAngle -= 5
         print(panAngle)
         if panAngle < 20:
             panAngle = 20
         positionServo(panServo, panAngle)
 
-    if (y < 160):
+    if (y < 190):
         tiltAngle -= 5
         print(tiltAngle)
         if tiltAngle > 160:
             tiltAngle = 160
         positionServo(tiltServo, tiltAngle)
  
-    if (y > 210):
+    if (y > 240):
         tiltAngle += 5
         print(tiltAngle)
         if tiltAngle < 20:
@@ -90,7 +90,7 @@ while True:
     # grab the next frame from the video stream, Invert 180o, resize the
     # frame, and convert it to the HSV color space
     frame = vs.read()
-    frame = imutils.resize(frame, width=500)
+    frame = imutils.resize(frame, width=600)
     frame = cv2.flip(frame, -1)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
